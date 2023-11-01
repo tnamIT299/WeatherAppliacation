@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                             txt_wind.setText(gio+"m/s");
 
 
+
                             //Đpc dữ liệu từ jsonObject cloud
                             JSONObject jsonObjectCloud = jsonObject.getJSONObject("clouds");
                             String may = jsonObjectCloud.getString("all");
