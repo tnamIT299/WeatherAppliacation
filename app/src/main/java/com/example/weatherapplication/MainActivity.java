@@ -16,6 +16,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     EditText editText_search;
@@ -45,7 +53,69 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("Ketqua", response);
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+
+                            //Lấy dữ liệu ngày từ JsonObject dt
+                            String day = jsonObject.getString("dt");
+                            //Lấy tên thành phố từ JsonObject name
+                            String cityName = jsonObject.getString("name");
+                            txt_city.setText(cityName);
+
+                            //Format dữ liệu ngày tháng năm
+                            long l = Long.valueOf(day);
+                            Date date = new Date(l*1000L);
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd HH:mm:ss");
+                            String Day = simpleDateFormat.format(date);
+                            txt_Updateday.setText(Day);
+
+                            //Đọc dữ liệu từ jsonObject Weather
+                            JSONArray jsonArrayWeather = jsonObject.getJSONArray("weather");
+                            JSONObject jsonObjectWeather = jsonArrayWeather.getJSONObject(0);
+                            String status = jsonObjectWeather.getString("main");
+                            String icon = jsonObjectWeather.getString("icon");
+                            Log.d("icon", icon);
+
+
+                            //Đọc file ảnh
+                            Picasso.with(MainActivity.this).load("http://openweathermap.org/img/wn/"+icon+".png").into(imgView_icon);
+
+                            //Đọc trạng thái , gán text
+                            txt_status.setText(status);
+
+                            //Đọc dữ liệu từ jsonObject main
+                            JSONObject jsonObject1Main = jsonObject.getJSONObject("main");
+                            String nhietdo = jsonObject1Main.getString("temp");
+                            String doam = jsonObject1Main.getString("humidity");
+                            //format nhietdo về int
+                            Double t = Double.valueOf(nhietdo);
+                            String temperature = String.valueOf(t.intValue());
+
+                            //gán Text
+                            txt_Temperature.setText(temperature+"°C");
+                            txt_humidity.setText(doam +"%");
+
+                            //Đọc dữ liệu từ jsonObject Wind
+                            JSONObject jsonObject1Wind = jsonObject.getJSONObject("wind");
+                            String gio = jsonObject1Wind.getString("speed");
+                            txt_wind.setText(gio+"m/s");
+
+
+                            //Đpc dữ liệu từ jsonObject cloud
+                            JSONObject jsonObjectCloud = jsonObject.getJSONObject("clouds");
+                            String may = jsonObjectCloud.getString("all");
+                            txt_cloud.setText(may+"%");
+
+
+                            //Đpc dữ liệu từ jsonObject sys
+                            JSONObject jsonObjectSys = jsonObject.getJSONObject("sys");
+                            String country = jsonObjectSys.getString("country");
+                            txt_country.setText(country);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
